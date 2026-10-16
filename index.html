@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffd43b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="YS">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>YS – Shape Builders</title>
+<style>
+:root{
+  --bg:#fff6e0; --ink:#2b2d42; --muted:#6b6f85; --panel:#ffffff; --line:#e2d8bd;
+  --slot:#e6ebf2; --accent:#4dabf7; --good:#2f9e44; --bad:#e03131;
+  --c0:#ff6b6b; --c1:#ffa94d; --c2:#ffd43b; --c3:#69db7c; --c4:#38d9a9; --c5:#4dabf7;
+  --c6:#748ffc; --c7:#da77f2; --c8:#f783ac; --c9:#a9e34b; --c10:#66d9e8; --c11:#b197fc;
+  --font:'Trebuchet MS','Segoe UI Rounded','Segoe UI','Noto Sans Ethiopic','Nyala','Ebrima','Abyssinica SIL',system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+html{-webkit-text-size-adjust:100%;overscroll-behavior:none}
+button,a{touch-action:manipulation}
+body{-webkit-user-select:none;user-select:none;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.4;min-height:100vh;
+  background-image:radial-gradient(circle at 12px 12px,rgba(0,0,0,.05) 3px,transparent 4px);background-size:36px 36px}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{max-width:1000px;margin:0 auto;padding:10px 12px 40px}
+.top{display:flex;align-items:center;gap:10px;min-height:52px}
+.top .crumb{flex:1;font-weight:700;font-size:1.05rem;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.icon-btn{width:48px;height:48px;border-radius:14px;border:2px solid var(--ink);background:var(--panel);font-size:1.4rem;box-shadow:0 4px 0 var(--ink)}
+.icon-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.icon-btn[hidden]{visibility:hidden;display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:8px 18px;border-radius:16px;border:2px solid var(--ink);
+  background:var(--panel);font-weight:700;box-shadow:0 4px 0 var(--ink);user-select:none}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.primary{background:var(--accent)}
+.btn.green{background:var(--c3)}
+.btn.yellow{background:var(--c2)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{min-height:40px;padding:4px 12px;font-size:.95rem}
+h1,h2,h3{margin:0}
+
+/* home */
+.home{text-align:center;padding-top:6px}
+.logo{display:flex;justify-content:center;gap:10px;margin:4px 0 6px}
+.blk{width:92px;height:92px;border-radius:18px;border:3px solid var(--ink);display:grid;place-items:center;font-size:3.4rem;font-weight:900;color:var(--ink);
+  position:relative;box-shadow:0 6px 0 var(--ink)}
+.blk::before,.blk::after{content:"";position:absolute;top:-9px;width:22px;height:11px;border:3px solid var(--ink);border-bottom:0;border-radius:8px 8px 0 0;background:inherit}
+.blk::before{left:14px}.blk::after{right:14px}
+.blk.y{background:var(--c2);transform:rotate(-4deg)}.blk.s{background:var(--c8);transform:rotate(3deg)}
+.tag{color:var(--muted);margin:6px 0 18px}
+.sect{font-weight:800;margin:18px 0 8px;font-size:1.05rem}
+.ages{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.age{padding:12px 8px;border-radius:18px;border:3px solid var(--line);background:var(--panel);text-align:center}
+.age .em{font-size:2rem}.age b{display:block}.age small{color:var(--muted);display:block}.age small.d{font-size:.78rem;margin-top:4px;line-height:1.25}
+.age.on{border-color:var(--ink);background:var(--c2);box-shadow:0 4px 0 var(--ink)}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.mode{padding:18px 12px;border-radius:22px;border:3px solid var(--ink);box-shadow:0 6px 0 var(--ink);font-weight:800;font-size:1.2rem}
+.mode:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.mode .em{font-size:2.6rem;display:block}.mode small{font-weight:500;display:block;color:#3a3d55;font-size:.9rem}
+.mode.m1{background:var(--c10)}.mode.m2{background:var(--c3)}.mode.m3{background:var(--c8)}
+
+/* levels */
+.lvls{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:12px;margin-top:10px}
+.lvl{padding:8px 4px;border-radius:18px;border:3px solid var(--ink);background:var(--panel);font-weight:800;font-size:1.3rem;box-shadow:0 4px 0 var(--ink);text-align:center}
+.lvl small{display:block;font-size:.85rem;letter-spacing:1px;color:#e8a100}
+.lvl:disabled{opacity:.45;box-shadow:none;cursor:not-allowed}
+.lvl.done{background:var(--c3)}
+.lvl.next{background:var(--c2)}
+.info{background:var(--panel);border:2px solid var(--line);border-radius:16px;padding:10px 14px;margin:8px 0}
+
+/* game */
+.gamebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:6px 0 10px}
+.goal{flex:1 1 260px;font-weight:800;font-size:1.15rem}
+.goal small{display:block;font-weight:500;color:var(--muted);font-size:.9rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.stagewrap{position:relative;display:flex;justify-content:center}
+svg.stage{touch-action:none;user-select:none;max-width:100%;height:auto;border-radius:22px;background:rgba(255,255,255,.7);border:3px solid var(--ink)}
+.piece{cursor:grab}
+.piece.sel .body{filter:drop-shadow(0 0 5px rgba(43,45,66,.85))}
+.progress{height:14px;background:#fff;border:2px solid var(--ink);border-radius:10px;overflow:hidden;margin-top:12px}
+.progress i{display:block;height:100%;width:0;background:var(--c3);transition:width .25s}
+.overlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(255,246,224,.82);border-radius:22px;z-index:5;animation:pop .3s ease}
+.card{background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:0 8px 0 var(--ink);padding:20px 22px;max-width:92%;width:440px;text-align:center}
+.card .stars{font-size:2.8rem;color:#f59f00;letter-spacing:4px}
+.card p{margin:8px 0 14px}
+.card .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.confetti i{position:absolute;top:-14px;width:10px;height:16px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{top:108vh;transform:rotate(720deg) translateX(40px)}}
+@media (prefers-reduced-motion:reduce){.confetti{display:none}.overlay{animation:none}}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;z-index:60}
+
+/* create */
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px;justify-content:center}
+.pal{padding:6px;border-radius:14px;border:2px solid var(--ink);background:var(--panel);box-shadow:0 3px 0 var(--ink);min-width:54px;min-height:54px;display:grid;place-items:center}
+.pal:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.status{margin-top:12px;font-weight:700;text-align:center;min-height:1.6em}
+.chal{background:var(--c2);border:3px solid var(--ink);border-radius:16px;padding:8px 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-weight:800}
+.chal.ok{background:var(--c3)}
+
+/* learn */
+.tabs{display:flex;gap:8px;justify-content:center;margin:8px 0 12px}
+.tab{padding:8px 20px;border-radius:14px;border:2px solid var(--ink);background:var(--panel);font-weight:800}
+.tab.on{background:var(--c5);box-shadow:0 3px 0 var(--ink)}
+.shapes{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.shape{border:3px solid var(--ink);border-radius:20px;background:var(--panel);padding:10px;text-align:center;font-weight:800;box-shadow:0 4px 0 var(--ink)}
+.shape svg{width:84px;height:84px;display:block;margin:0 auto 4px}
+.shape.on{background:var(--c2)}
+.detail{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:center;background:var(--panel);border:3px solid var(--ink);border-radius:22px;padding:14px;margin-bottom:14px}
+.detail svg{width:160px;height:160px}
+.detail .txt{flex:1 1 220px}
+.detail h2{font-size:1.7rem}
+.quiz{text-align:center}
+.q{font-size:1.5rem;font-weight:800;margin:10px 0 16px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,150px));gap:12px;justify-content:center}
+.opt{border:3px solid var(--ink);border-radius:20px;background:var(--panel);padding:8px;box-shadow:0 4px 0 var(--ink)}
+.opt svg{width:100%;height:auto;max-width:110px}
+.opt.wrong{opacity:.25;pointer-events:none}
+.opt.right{background:var(--c3)}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.streak{margin-top:16px;font-weight:700}
+.foot{margin:26px 0 0;font-size:.85rem}.foot a{color:var(--muted)}
+table.rev{-webkit-user-select:text;user-select:text;width:100%;border-collapse:collapse;background:var(--panel);font-size:.9rem}
+table.rev th,table.rev td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.rev td.k{font:.75rem monospace;color:var(--muted);white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <button class="icon-btn" id="back" aria-label="Back" hidden>←</button>
+    <div class="crumb" id="crumb"></div>
+    <button class="icon-btn" id="lang" aria-label="Language">አማ</button>
+    <button class="icon-btn" id="snd" aria-label="Sound on/off">🔊</button>
+  </div>
+  <main id="screen"></main>
+</div>
+
+<script>
+'use strict';
+/* ============================== helpers ============================== */
+const $ = (s, r = document) => r.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function mulberry(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+const strHash = s => { let h = 7; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
+const pick = (a, r) => a[Math.floor(r() * a.length)];
+const randInt = (lo, hi, r) => lo + Math.floor(r() * (hi - lo + 1));
+function shuffle(a, r) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const K = c => c[0] + ',' + c[1];
+const COLORS = ['#ff6b6b', '#ffa94d', '#ffd43b', '#69db7c', '#38d9a9', '#4dabf7', '#748ffc', '#da77f2', '#f783ac', '#a9e34b', '#66d9e8', '#b197fc'];
+const stars = n => '★'.repeat(n) + '☆'.repeat(3 - n);
+
+/* ============================== cell geometry ============================== */
+const norm = cs => {
+  const mx = Math.min(...cs.map(c => c[0])), my = Math.min(...cs.map(c => c[1]));
+  return cs.map(c => [c[0] - mx, c[1] - my]).sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+};
+const rot = cs => norm(cs.map(([x, y]) => [-y, x]));
+const flp = cs => norm(cs.map(([x, y]) => [-x, y]));
+const dims = cs => [Math.max(...cs.map(c => c[0])) + 1, Math.max(...cs.map(c => c[1])) + 1];
+function variants(cs) {
+  const out = []; let c = norm(cs);
+  for (let f = 0; f < 2; f++) { for (let r = 0; r < 4; r++) { out.push(c); c = rot(c); } c = flp(c); }
+  return out;
+}
+const same = (a, b) => a.length === b.length && a.every((c, i) => c[0] === b[i][0] && c[1] === b[i][1]);
+
+const rectCells = (w, h) => { const o = []; for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) o.push([x, y]); return o; };
+const lCells = (a, b) => { const o = []; for (let y = 0; y < a; y++) o.push([0, y]); for (let x = 1; x < b; x++) o.push([x, a - 1]); return o; };
+const tCells = (w, h) => { const o = []; for (let x = 0; x < w; x++) o.push([x, 0]); for (let y = 1; y < h; y++) o.push([(w - 1) / 2, y]); return o; };
+const plusCells = n => { const m = (n - 1) / 2, o = []; for (let i = 0; i < n; i++) { o.push([i, m]); if (i !== m) o.push([m, i]); } return o; };
+
+/** Name of a connected set of cells, or null. */
+function nameOf(cells) {
+  for (const v of variants(cells)) {
+    const [w, h] = dims(v), n = v.length;
+    if (n === 1) return 'single block';
+    if (n === w * h) return (w === 1 || h === 1) ? 'bar' : (w === h ? 'square' : 'rectangle');
+    if (w >= 2 && h >= 2 && n === w + h - 1 && v.every(c => c[0] === 0 || c[1] === h - 1)) return 'L-shape';
+    if (w % 2 === 1 && w >= 3 && h >= 2 && n === w + h - 1 && v.every(c => c[1] === 0 || c[0] === (w - 1) / 2)) return 'T-shape';
+    if (w === h && w % 2 === 1 && w >= 3 && n === 2 * w - 1 && v.every(c => c[0] === (w - 1) / 2 || c[1] === (w - 1) / 2)) return 'plus';
+  }
+  return null;
+}
+const FACTS = {
+  square: 'A square has 4 equal sides and 4 square corners.',
+  rectangle: 'A rectangle has 4 sides and 4 square corners. Opposite sides are the same length.',
+  'L-shape': 'An L-shape has two arms that meet at a corner, just like the letter L.',
+  'T-shape': 'A T-shape has a top bar with a stem in the middle, like the letter T.',
+  plus: 'A plus shape has four arms that meet in the middle. It is perfectly balanced!',
+  mystery: 'A mystery shape! Its pieces fit together like a jigsaw.'
+};
+
+function blob(n, rng) {
+  const set = new Map([['0,0', [0, 0]]]);
+  while (set.size < n) {
+    const cand = new Map();
+    for (const [x, y] of set.values())
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const c = [x + dx, y + dy], k = K(c);
+        if (!set.has(k)) cand.set(k, (cand.get(k) || 0) + 1);
+      }
+    const arr = [...cand.entries()], wts = arr.map(([, v]) => v * v);
+    let r = rng() * wts.reduce((a, b) => a + b, 0), i = 0;
+    while (r > wts[i]) { r -= wts[i]; i++; if (i >= arr.length - 1) break; }
+    const [kx, ky] = arr[i][0].split(',').map(Number);
+    set.set(arr[i][0], [kx, ky]);
+  }
+  return norm([...set.values()]);
+}
+
+function partition(cells, n, rng, maxSize) {
+  const nb = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  let best = null;
+  for (let attempt = 0; attempt < 500; attempt++) {
+    const owner = new Map(), groups = [];
+    shuffle(cells.slice(), rng).slice(0, n).forEach((c, i) => { owner.set(K(c), i); groups.push([c]); });
+    let left = cells.length - n, stuck = false;
+    while (left > 0) {
+      const cand = [];
+      groups.forEach((g, i) => {
+        const fr = [];
+        for (const c of g) for (const d of nb) {
+          const t = [c[0] + d[0], c[1] + d[1]], k = K(t);
+          if (!owner.has(k) && cellSet(cells).has(k)) fr.push(t);
+        }
+        if (fr.length) cand.push([i, fr]);
+      });
+      if (!cand.length) { stuck = true; break; }
+      let ch;
+      if (rng() < 0.6) ch = cand.reduce((a, b) => groups[b[0]].length < groups[a[0]].length ? b : a);
+      else ch = pick(cand, rng);
+      const t = pick(ch[1], rng);
+      owner.set(K(t), ch[0]); groups[ch[0]].push(t); left--;
+    }
+    if (stuck) continue;
+    best = groups;
+    const lim = attempt < 250 ? maxSize : maxSize + 3;
+    if (groups.every(g => g.length >= 2 && g.length <= lim)) return groups;
+  }
+  return best;
+}
+let _csCache = null, _csFor = null;
+function cellSet(cells) { if (_csFor !== cells) { _csFor = cells; _csCache = new Set(cells.map(K)); } return _csCache; }
+
+/* ============================== ages & levels ============================== */
+const LEVELS = 30;
+/* Each age group gets different rules, not just different numbers:
+   kinds     – which target shapes appear
+   blob      – chance of an irregular "mystery" target [start, end]
+   pal       – how many piece colours (fewer colours = harder to tell pieces apart)
+   ghost     – show the green "fits here" preview while dragging
+   board     – Builder board size; palette – Builder block count; shapes – Shape Lab count */
+const AGES = {
+  tiny:   { name: 'Tiny Builders', range: '4–5', emoji: '🐣', rotate: false, flip: false, minP: 2, maxP: 4,  avg: [2.6, 3.4], kinds: ['rect', 'L'],                 blob: [0, 0],     pal: 12, ghost: true,  board: [8, 6],   palette: 6,  shapes: 5,
+          desc: 'Big pieces, 2–4 per puzzle. Squares, rectangles and L-shapes.' },
+  young:  { name: 'Explorers',     range: '6–7', emoji: '🦊', rotate: true,  flip: false, minP: 2, maxP: 8,  avg: [3.4, 4.2], kinds: ['rect', 'L', 'T', 'plus'],    blob: [0, .3],    pal: 12, ghost: true,  board: [10, 7],  palette: 9,  shapes: 8,
+          desc: 'Turn the pieces! Add T-shapes and plus shapes.' },
+  mid:    { name: 'Inventors',     range: '8–9', emoji: '🚀', rotate: true,  flip: true,  minP: 3, maxP: 11, avg: [4, 4.8],   kinds: ['rect', 'L', 'T', 'plus'],    blob: [.2, .7],   pal: 6,  ghost: true,  board: [12, 8],  palette: 11,
+          shapes: 10, desc: 'Turn and flip. Many mystery shapes. Fewer colours to tell pieces apart.' },
+  senior: { name: 'Masters',       range: '10+', emoji: '🧠', rotate: true,  flip: true,  minP: 4, maxP: 14, avg: [4.4, 5.2], kinds: ['rect', 'L', 'T', 'plus'],    blob: [.4, 1],    pal: 3,  ghost: false, board: [14, 9],  palette: 13,
+          shapes: 13, desc: 'Up to 14 pieces in 3 colours, with no "fits here" help. Angles and polygons.' }
+};
+
+function regionOptions(target, kinds) {
+  const out = [], near = c => Math.abs(c - target) <= 1;
+  if (kinds.includes('rect')) for (let w = 2; w <= 9; w++) for (let h = 2; h <= 9; h++) if (near(w * h)) out.push({ kind: 'rect', cells: rectCells(w, h) });
+  if (kinds.includes('L')) for (let a = 3; a <= 8; a++) for (let b = 3; b <= 8; b++) if (near(a + b - 1)) out.push({ kind: 'L', cells: lCells(a, b) });
+  if (kinds.includes('T')) for (let w = 3; w <= 9; w += 2) for (let h = 3; h <= 8; h++) if (near(w + h - 1)) out.push({ kind: 'T', cells: tCells(w, h) });
+  if (kinds.includes('plus')) for (let n = 3; n <= 9; n += 2) if (near(2 * n - 1)) out.push({ kind: 'plus', cells: plusCells(n) });
+  return out;
+}
+
+function makeLevel(age, l) {
+  const A = AGES[age], rng = mulberry(strHash(age) * 131 + l * 977 + 5);
+  const t = Math.min(1, (l - 1) / (LEVELS - 1));
+  let n = Math.round(A.minP + t * (A.maxP - A.minP));
+  const avg = A.avg[0] + t * (A.avg[1] - A.avg[0]);
+  const target = Math.round(n * avg);
+  const opts = regionOptions(target, A.kinds);
+  // first levels of every age are plain squares/rectangles; then the age's own shape set opens up
+  let pool = l <= 3 ? opts.filter(o => o.kind === 'rect') : opts;
+  if (!pool.length) pool = opts;
+  // the age's own shape mix: round-robin through its kinds so each kind is actually seen
+  if (l > 3 && pool.length) {
+    const want = A.kinds[(l - 4) % A.kinds.length], sub = pool.filter(o => o.kind === want);
+    if (sub.length) pool = sub;
+  }
+  const pBlob = A.blob[0] + t * (A.blob[1] - A.blob[0]);
+  const cells = norm((pool.length && rng() >= pBlob) ? pick(pool, rng).cells : blob(target, rng));
+  n = Math.max(2, Math.min(n, Math.floor(cells.length / 2)));
+  const parts = partition(cells, n, rng, Math.ceil(avg * 1.8));
+  const order = shuffle(parts.map((_, i) => i), rng);
+  const pieces = order.map((pi, idx) => {
+    const raw = parts[pi];
+    const mx = Math.min(...raw.map(c => c[0])), my = Math.min(...raw.map(c => c[1]));
+    const base = norm(raw);
+    let cur = base;
+    if (A.rotate) { for (let r = randInt(0, 3, rng); r > 0; r--) cur = rot(cur); if (A.flip && rng() < 0.5) cur = flp(cur); }
+    return { id: idx, color: COLORS[(pi % A.pal) * (12 / A.pal)], cells: cur, base, dim: Math.max(...dims(base)), gx: null, gy: null, sol: { cells: base, gx: mx, gy: my } };
+  });
+  const nm = nameOf(cells);
+  return { region: cells, name: nm || 'mystery', pieces };
+}
+
+/* ============================== storage / sound ============================== */
+let S = { age: 'young', lang: 'en', screen: 'home', sound: true, stars: {}, solved: {}, quizBest: 0 };
+function load() {
+  try { const d = JSON.parse(localStorage.getItem('ys.v1') || '{}'); Object.assign(S, d, { screen: 'home' }); } catch (e) { }
+  if (!AGES[S.age]) S.age = 'young';
+  if (S.lang !== 'am' && S.lang !== 'en') S.lang = (navigator.language || '').toLowerCase().startsWith('am') ? 'am' : 'en';
+}
+function save() {
+  try { localStorage.setItem('ys.v1', JSON.stringify({ age: S.age, lang: S.lang, sound: S.sound, stars: S.stars, solved: S.solved, quizBest: S.quizBest })); } catch (e) { }
+}
+let ac;
+function tone(f, d = .12, type = 'sine', v = .08, t0 = 0) {
+  if (!S.sound) return;
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + t0;
+    o.type = type; o.frequency.value = f;
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + d + .02);
+  } catch (e) { }
+}
+const sfx = {
+  pick: () => tone(520, .06),
+  place: () => { tone(440, .08); tone(660, .1, 'sine', .08, .07); },
+  bad: () => tone(170, .2, 'triangle', .1),
+  win: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .25, 'sine', .09, i * .12)),
+  ok: () => { tone(660, .1); tone(880, .15, 'sine', .08, .09); }
+};
+/* Speech: only use a voice that really matches the language. Without an Amharic voice the browser
+   would silently pick another language (e.g. French), so Amharic stays silent instead. */
+function voiceFor(lang) {
+  try {
+    const vs = speechSynthesis.getVoices();
+    return vs.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(lang)) || null;
+  } catch (e) { return null; }
+}
+/* Amharic: most devices have no Amharic voice. Fall back to an online Amharic text-to-speech clip
+   (needs internet; only the shape text is sent). If it cannot load, the child is told, never a wrong-language voice. */
+const canSpeak = () => S.lang === 'am' || !!voiceFor(S.lang);
+let amAudio = null, amToken = 0;
+function onlineSpeak(text, explicit) {
+  const chunks = (text.match(/[^።.!?]+[።.!?]?/g) || [text]).map(s => s.trim()).filter(Boolean);
+  const token = ++amToken;
+  if (amAudio) { try { amAudio.pause(); } catch (e) { } }
+  let i = 0, failed = false;
+  const next = () => {
+    if (token !== amToken || i >= chunks.length) return;
+    const a = amAudio = new Audio('https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=am&q=' + encodeURIComponent(chunks[i++].slice(0, 190)));
+    a.onended = next;
+    a.onerror = () => { if (!failed && explicit) toast(t('noAudio')); failed = true; };
+    const p = a.play(); if (p && p.catch) p.catch(() => { if (!failed && explicit) toast(t('noAudio')); failed = true; });
+  };
+  next();
+}
+function speak(text, explicit) {
+  if (!S.sound || !canSpeak()) return;
+  if (S.lang === 'am' && !voiceFor('am')) return onlineSpeak(text, explicit);
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text), v = voiceFor(S.lang);
+    u.rate = .85; u.lang = S.lang === 'am' ? 'am-ET' : 'en-US'; if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  } catch (e) { }
+}
+try { speechSynthesis.onvoiceschanged = () => { if (S.screen === 'learn') renderLearn(); }; } catch (e) { }
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1800);
+}
+function confetti() {
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const c = document.createElement('div'); c.className = 'confetti';
+  for (let i = 0; i < 70; i++) {
+    const s = document.createElement('i');
+    s.style.cssText = `left:${Math.random() * 100}%;background:${COLORS[i % 12]};animation-duration:${1.6 + Math.random() * 1.6}s;animation-delay:${Math.random() * .5}s`;
+    c.appendChild(s);
+  }
+  document.body.appendChild(c); setTimeout(() => c.remove(), 4000);
+}
+
+/* ============================== languages (English / አማርኛ) ============================== */
+const pl = (n, one, many) => n === 1 ? one : many;
+const L10N = {
+  en: {
+    tag: 'Learn shapes · build shapes · fit the pieces together!',
+    who: 'Who is playing?', pickGame: 'Pick a game', age: n => 'Age ' + n,
+    'age.tiny': 'Tiny Builders', 'age.young': 'Explorers', 'age.mid': 'Inventors', 'age.senior': 'Masters',
+    'desc.tiny': 'Big pieces, 2–4 per puzzle. Squares, rectangles and L-shapes.',
+    'desc.young': 'Turn the pieces! Add T-shapes and plus shapes.',
+    'desc.mid': 'Turn and flip. Many mystery shapes. Fewer colours to tell pieces apart.',
+    'desc.senior': 'Up to 14 pieces in 3 colours, with no "fits here" help. Angles and polygons.',
+    mLab: 'Shape Lab', mLabD: 'Meet the shapes and take a quiz',
+    mPuz: 'Puzzles', mPuzD: 'Fit the pieces together to fill the shape',
+    mBuild: 'Builder', mBuildD: 'Make your own shapes with blocks',
+    levelsInfo: 'Fill the shape with all the pieces. Each level has <b>more pieces</b> than the last!',
+    howDrag: 'Drag each piece into the shape.', howTurn: 'Tap a piece to turn it.', howFlip: 'Tap to turn, use Flip to mirror.',
+    starsTotal: (a, b) => `⭐ ${a} / ${b} stars`, level: n => 'Level ' + n,
+    fill: s => `Fill the ${s}!`, useAll: n => `Use all ${n} pieces.`, area: n => `The shape covers ${n} squares.`,
+    turn: '↻ Turn', flip: '⇋ Flip', hint: '💡 Hint', restart: '⟲ Restart', remove: '🗑 Remove', clear: 'Clear all',
+    built: s => `You built the ${s}!`, next: 'Next level ➜', again: '⟲ Again', levels: 'Levels',
+    tapFirst: 'Tap a piece first', boardFull: 'The board is full!', noAudio: 'Amharic voice could not load (it needs internet)',
+    buildStart: 'Tap a block above to start building!',
+    status: (n, total, nm) => `${n} ${pl(n, 'piece', 'pieces')}, ${total} blocks — ${nm ? `it looks like a <b>${nm}</b>!` : 'a mystery shape!'}`,
+    groups: (n, c) => `${n} pieces in ${c} separate groups. Push them together to make one shape!`,
+    chal: (nm, n) => `🎯 Challenge: build a ${nm} using exactly ${n} ${pl(n, 'piece', 'pieces')}`,
+    chalDone: (nm, n) => `🎉 You made a ${nm} with ${n} ${pl(n, 'piece', 'pieces')}!`,
+    nextChal: 'Next challenge ➜', skip: 'Skip',
+    explore: 'Explore', quiz: 'Quiz', say: '🔊 Say it',
+    countCorners: n => `Count the corners: <b>${n}</b>`, noCorners: 'It has <b>no corners</b>!',
+    sc: (s, c) => `Sides: <b>${s}</b> · Corners: <b>${c}</b>`,
+    angSum: (s, d) => `Its inside angles add up to <b>${d}°</b>. (${s} − 2) × 180`,
+    note: s => s === 3 ? 'A 3-sided shape is a triangle.' : s === 4 ? 'A 4-sided shape is a quadrilateral.' : `A ${s}-sided shape is a polygon.`,
+    qName: s => `Where is the <b>${s}</b>?`, qSides: n => `Find the shape with <b>${n}</b> sides!`, qCorners: n => `Find the shape with <b>${n}</b> corners!`,
+    qMore: 'Which shape has <b>more sides</b>?', qQuad: 'Which one is a <b>quadrilateral</b> (4 straight sides)?',
+    qAngles: d => `Which shape's inside angles add up to <b>${d}°</b>?`,
+    streak: (a, b) => `🔥 Streak: ${a} · Best: ${b}`, streakLost: '🔥 Streak: 0 — try again!',
+    'n.square': 'square', 'n.rectangle': 'rectangle', 'n.L-shape': 'L-shape', 'n.T-shape': 'T-shape', 'n.plus': 'plus shape',
+    'n.bar': 'bar', 'n.single block': 'single block', 'n.mystery': 'mystery shape',
+    'f.square': 'A square has 4 equal sides and 4 square corners.',
+    'f.rectangle': 'A rectangle has 4 sides and 4 square corners. Opposite sides are the same length.',
+    'f.L-shape': 'An L-shape has two arms that meet at a corner, just like the letter L.',
+    'f.T-shape': 'A T-shape has a top bar with a stem in the middle, like the letter T.',
+    'f.plus': 'A plus shape has four arms that meet in the middle. It is perfectly balanced!',
+    'f.mystery': 'A mystery shape! Its pieces fit together like a jigsaw.',
+    'sh.circle': 'Circle', 'sh.triangle': 'Triangle', 'sh.square': 'Square', 'sh.rectangle': 'Rectangle', 'sh.oval': 'Oval', 'sh.diamond': 'Diamond',
+    'sh.pentagon': 'Pentagon', 'sh.hexagon': 'Hexagon', 'sh.octagon': 'Octagon', 'sh.star': 'Star', 'sh.trapezoid': 'Trapezoid',
+    'sh.parallelogram': 'Parallelogram', 'sh.heptagon': 'Heptagon',
+    'sf.circle': 'A circle is perfectly round. It has no corners and no straight sides. Wheels are circles!',
+    'sf.triangle': 'A triangle has 3 sides and 3 corners. It is the strongest shape for building!',
+    'sf.square': 'A square has 4 equal sides and 4 square corners.',
+    'sf.rectangle': 'A rectangle has 4 sides and 4 square corners. Doors and books are rectangles.',
+    'sf.oval': 'An oval looks like a squashed circle. An egg is an oval!',
+    'sf.diamond': 'A diamond has 4 equal sides, but it stands on a corner. It is also called a rhombus.',
+    'sf.pentagon': 'A pentagon has 5 sides and 5 corners. "Penta" means five!',
+    'sf.hexagon': 'A hexagon has 6 sides and 6 corners. Bees build their honeycomb from hexagons!',
+    'sf.octagon': 'An octagon has 8 sides and 8 corners. A stop sign is an octagon!',
+    'sf.star': 'This star has 5 points. Counting the dents too, it has 10 corners!',
+    'sf.trapezoid': 'A trapezoid has 4 sides, and one pair of them is parallel (they never meet).',
+    'sf.parallelogram': 'A parallelogram has 2 pairs of parallel sides. It looks like a leaning rectangle.',
+    'sf.heptagon': 'A heptagon has 7 sides. "Hepta" means seven!'
+  },
+  am: {
+    tag: 'ቅርጾችን ተማሩ · ቅርጾችን ገንቡ · ቁርጥራጮቹን አገጣጥሙ!',
+    who: 'ማን እየተጫወተ ነው?', pickGame: 'ጨዋታ ምረጡ', age: n => 'ዕድሜ ' + n,
+    'age.tiny': 'ትንንሽ ገንቢዎች', 'age.young': 'አሳሾች', 'age.mid': 'ፈጣሪዎች', 'age.senior': 'ጌቶች',
+    'desc.tiny': 'ትላልቅ ቁርጥራጮች፣ በእያንዳንዱ እንቆቅልሽ 2–4። ካሬዎች፣ አራት ማዕዘኖችና L ቅርጾች።',
+    'desc.young': 'ቁርጥራጮቹን አዙሩ! T ቅርጾችና የመደመር ቅርጾች ይጨምራሉ።',
+    'desc.mid': 'አዙሩና ገልብጡ። ብዙ ሚስጥራዊ ቅርጾች። ቁርጥራጮችን ለመለየት ጥቂት ቀለሞች።',
+    'desc.senior': 'እስከ 14 ቁርጥራጮች በ3 ቀለሞች፣ «እዚህ ይገጥማል» እርዳታ የለም። ማዕዘኖችና ባለብዙ ማዕዘን ቅርጾች።',
+    mLab: 'የቅርጽ ላብ', mLabD: 'ቅርጾችን ተዋወቁና ጥያቄዎችን መልሱ',
+    mPuz: 'እንቆቅልሾች', mPuzD: 'ቅርጹን ለመሙላት ቁርጥራጮቹን አገጣጥሙ',
+    mBuild: 'ገንቢ', mBuildD: 'በብሎኮች የራሳችሁን ቅርጾች ሥሩ',
+    levelsInfo: 'ቅርጹን በሁሉም ቁርጥራጮች ሙሉ። እያንዳንዱ ደረጃ ከቀዳሚው <b>ብዙ ቁርጥራጮች</b> አሉት!',
+    howDrag: 'እያንዳንዱን ቁርጥራጭ ወደ ቅርጹ ጎትቱ።', howTurn: 'ለማዞር ቁርጥራጭ ንኩ።', howFlip: 'ለማዞር ንኩ፣ ለመገልበጥ «መገልበጥ»ን ተጠቀሙ።',
+    starsTotal: (a, b) => `⭐ ${a} / ${b} ኮከቦች`, level: n => 'ደረጃ ' + n,
+    fill: s => `ቅርጹን ሙሉ፦ ${s}!`, useAll: n => `ሁሉንም ${n} ቁርጥራጮች ተጠቀሙ።`, area: n => `ቅርጹ ${n} ካሬዎችን ይሸፍናል።`,
+    turn: '↻ ማዞር', flip: '⇋ መገልበጥ', hint: '💡 ፍንጭ', restart: '⟲ እንደገና መጀመር', remove: '🗑 ማስወገድ', clear: 'ሁሉንም ማጽዳት',
+    built: s => `ቅርጹ ተሞልቷል፦ ${s}!`, next: 'ቀጣይ ደረጃ ➜', again: '⟲ እንደገና', levels: 'ደረጃዎች',
+    tapFirst: 'መጀመሪያ ቁርጥራጭ ንኩ', boardFull: 'ሰሌዳው ሞልቷል!', noAudio: 'የአማርኛ ድምፅ አልተጫነም (ኢንተርኔት ያስፈልጋል)',
+    buildStart: 'ለመገንባት ከላይ ያለ ብሎክ ንኩ!',
+    status: (n, total, nm) => `${n} ቁርጥራጭ፣ ${total} ብሎኮች — ${nm ? `<b>${nm}</b> ይመስላል!` : 'ሚስጥራዊ ቅርጽ ነው!'}`,
+    groups: (n, c) => `${n} ቁርጥራጮች በ${c} የተለያዩ ቡድኖች ውስጥ ናቸው። አንድ ቅርጽ ለመሥራት አቀራርቧቸው!`,
+    chal: (nm, n) => `🎯 ፈተና፦ በትክክል ${n} ቁርጥራጭ በመጠቀም ${nm} ሥሩ`,
+    chalDone: (nm, n) => `🎉 ${nm} በ${n} ቁርጥራጭ ተሠርቷል!`,
+    nextChal: 'ቀጣይ ፈተና ➜', skip: 'መዝለል',
+    explore: 'ማሰስ', quiz: 'ጥያቄ', say: '🔊 ማዳመጥ',
+    countCorners: n => `ማዕዘኖችን ቁጠሩ፦ <b>${n}</b>`, noCorners: '<b>ማዕዘን የለውም</b>!',
+    sc: (s, c) => `ጎኖች፦ <b>${s}</b> · ማዕዘኖች፦ <b>${c}</b>`,
+    angSum: (s, d) => `የውስጥ ማዕዘኖቹ ድምር <b>${d}°</b> ነው። (${s} − 2) × 180`,
+    note: s => s === 3 ? '3 ጎን ያለው ቅርጽ ሦስት ማዕዘን ይባላል።' : s === 4 ? '4 ጎን ያለው ቅርጽ አራት ጎን (ኳድሪላተራል) ይባላል።' : `${s} ጎን ያለው ቅርጽ ብዙ ማዕዘን (ፖሊጎን) ይባላል።`,
+    qName: s => `<b>${s}</b> የት አለ?`, qSides: n => `<b>${n}</b> ጎኖች ያለውን ቅርጽ ፈልጉ!`, qCorners: n => `<b>${n}</b> ማዕዘኖች ያለውን ቅርጽ ፈልጉ!`,
+    qMore: 'የትኛው ቅርጽ <b>ብዙ ጎኖች</b> አሉት?', qQuad: 'የትኛው <b>አራት ጎን ያለው</b> (4 ቀጥ ያሉ ጎኖች) ቅርጽ ነው?',
+    qAngles: d => `የውስጥ ማዕዘኖቹ ድምር <b>${d}°</b> የሆነው የትኛው ቅርጽ ነው?`,
+    streak: (a, b) => `🔥 ተከታታይ፦ ${a} · ከፍተኛ፦ ${b}`, streakLost: '🔥 ተከታታይ፦ 0 — እንደገና ሞክሩ!',
+    'n.square': 'ካሬ', 'n.rectangle': 'አራት ማዕዘን', 'n.L-shape': 'L ቅርጽ', 'n.T-shape': 'T ቅርጽ', 'n.plus': 'የመደመር ቅርጽ',
+    'n.bar': 'ረጅም ብሎክ', 'n.single block': 'አንድ ብሎክ', 'n.mystery': 'ሚስጥራዊ ቅርጽ',
+    'f.square': 'ካሬ 4 እኩል ጎኖችና 4 ቀጥ ያሉ ማዕዘኖች አሉት።',
+    'f.rectangle': 'አራት ማዕዘን 4 ጎኖችና 4 ቀጥ ያሉ ማዕዘኖች አሉት። ተቃራኒ ጎኖቹ እኩል ርዝመት ናቸው።',
+    'f.L-shape': 'L ቅርጽ እንደ L ፊደል በአንድ ማዕዘን የሚገናኙ ሁለት ክንዶች አሉት።',
+    'f.T-shape': 'T ቅርጽ እንደ T ፊደል ከላይ አግዳሚ ዘንግና በመሃል ቋሚ ግንድ አለው።',
+    'f.plus': 'የመደመር ቅርጽ በመሃል የሚገናኙ አራት ክንዶች አሉት። ፍጹም የተመጣጠነ ነው!',
+    'f.mystery': 'ሚስጥራዊ ቅርጽ! ቁርጥራጮቹ እንደ እንቆቅልሽ ይገጣጠማሉ።',
+    'sh.circle': 'ክብ', 'sh.triangle': 'ሦስት ማዕዘን', 'sh.square': 'ካሬ', 'sh.rectangle': 'አራት ማዕዘን', 'sh.oval': 'ሞላላ', 'sh.diamond': 'አልማዝ',
+    'sh.pentagon': 'አምስት ማዕዘን', 'sh.hexagon': 'ስድስት ማዕዘን', 'sh.octagon': 'ስምንት ማዕዘን', 'sh.star': 'ኮከብ', 'sh.trapezoid': 'ትራፒዞይድ',
+    'sh.parallelogram': 'ፓራሌሎግራም', 'sh.heptagon': 'ሰባት ማዕዘን',
+    'sf.circle': 'ክብ ፍጹም ክብ ነው። ማዕዘንም ሆነ ቀጥ ያለ ጎን የለውም። መንኮራኩሮች ክብ ናቸው!',
+    'sf.triangle': 'ሦስት ማዕዘን 3 ጎኖችና 3 ማዕዘኖች አሉት። ለግንባታ በጣም ጠንካራው ቅርጽ ነው!',
+    'sf.square': 'ካሬ 4 እኩል ጎኖችና 4 ቀጥ ያሉ ማዕዘኖች አሉት።',
+    'sf.rectangle': 'አራት ማዕዘን 4 ጎኖችና 4 ቀጥ ያሉ ማዕዘኖች አሉት። በሮችና መጻሕፍት አራት ማዕዘን ናቸው።',
+    'sf.oval': 'ሞላላ የተጨመቀ ክብ ይመስላል። እንቁላል ሞላላ ነው!',
+    'sf.diamond': 'አልማዝ 4 እኩል ጎኖች አለው፣ ግን በአንድ ማዕዘኑ ላይ ቆሟል። ራምበስም ይባላል።',
+    'sf.pentagon': 'አምስት ማዕዘን 5 ጎኖችና 5 ማዕዘኖች አሉት። «ፔንታ» ማለት አምስት ነው!',
+    'sf.hexagon': 'ስድስት ማዕዘን 6 ጎኖችና 6 ማዕዘኖች አሉት። ንቦች የማር ወለላቸውን ከስድስት ማዕዘኖች ይሠራሉ!',
+    'sf.octagon': 'ስምንት ማዕዘን 8 ጎኖችና 8 ማዕዘኖች አሉት። የ«ቁም» ምልክት ስምንት ማዕዘን ነው!',
+    'sf.star': 'ይህ ኮከብ 5 ጫፎች አሉት። የውስጥ ጉድጓዶቹንም ስንቆጥር 10 ማዕዘኖች አሉት!',
+    'sf.trapezoid': 'ትራፒዞይድ 4 ጎኖች አሉት፣ ከእነዚህ ውስጥ አንድ ጥንድ ትይዩ ናቸው (ፈጽሞ አይገናኙም)።',
+    'sf.parallelogram': 'ፓራሌሎግራም 2 ጥንድ ትይዩ ጎኖች አሉት። እንደ ዘንበል ያለ አራት ማዕዘን ይመስላል።',
+    'sf.heptagon': 'ሰባት ማዕዘን 7 ጎኖች አሉት። «ሄፕታ» ማለት ሰባት ነው!'
+  }
+};
+const t = (k, ...a) => { const v = (L10N[S.lang] && L10N[S.lang][k] !== undefined) ? L10N[S.lang][k] : L10N.en[k]; return typeof v === 'function' ? v(...a) : v; };
+const tn = name => t('n.' + (name || 'mystery'));
+function applyLang() {
+  document.documentElement.lang = S.lang;
+  $('#lang').textContent = S.lang === 'am' ? 'EN' : 'አማ';
+  $('#lang').setAttribute('aria-label', S.lang === 'am' ? 'Switch to English' : 'ወደ አማርኛ ቀይር');
+}
+
+/* ============================== router ============================== */
+const screenEl = $('#screen'), backBtn = $('#back'), crumb = $('#crumb');
+const PARENT = { levels: 'home', learn: 'home', create: 'home', puzzle: 'levels', review: 'home' };
+let lastArg;
+function go(name, arg) {
+  S.screen = name; lastArg = arg;
+  G = null;
+  window.scrollTo(0, 0);
+  ({ home: renderHome, levels: renderLevels, learn: renderLearn, create: renderCreate, puzzle: renderPuzzle, review: renderReview })[name](arg);
+  backBtn.hidden = name === 'home';
+}
+backBtn.onclick = () => go(PARENT[S.screen] || 'home');
+$('#snd').onclick = () => { S.sound = !S.sound; $('#snd').textContent = S.sound ? '🔊' : '🔇'; save(); if (S.sound) sfx.pick(); };
+$('#lang').onclick = () => { S.lang = S.lang === 'am' ? 'en' : 'am'; save(); applyLang(); sfx.pick(); go(S.screen, S.screen === 'learn' ? lastArg : S.screen === 'puzzle' ? lastArg : undefined); };
+
+/* ============================== home ============================== */
+function renderHome() {
+  crumb.textContent = '';
+  screenEl.innerHTML = `
+  <section class="home">
+    <div class="logo"><div class="blk y">Y</div><div class="blk s">S</div></div>
+    <p class="tag">${t('tag')}</p>
+    <div class="sect">${t('who')}</div>
+    <div class="ages">${Object.entries(AGES).map(([k, a]) =>
+      `<button class="age ${k === S.age ? 'on' : ''}" data-age="${k}"><span class="em">${a.emoji}</span><b>${t('age.' + k)}</b><small>${t('age', a.range)}</small><small class="d">${t('desc.' + k)}</small></button>`).join('')}</div>
+    <div class="sect">${t('pickGame')}</div>
+    <div class="modes">
+      <button class="mode m1" data-go="learn"><span class="em">🔷</span>${t('mLab')}<small>${t('mLabD')}</small></button>
+      <button class="mode m2" data-go="levels"><span class="em">🧩</span>${t('mPuz')}<small>${t('mPuzD')}</small></button>
+      <button class="mode m3" data-go="create"><span class="em">🧱</span>${t('mBuild')}<small>${t('mBuildD')}</small></button>
+    </div>
+    <p class="foot"><a href="#review" id="revLink">EN ⇄ አማ · translation check</a></p>
+  </section>`;
+  screenEl.querySelectorAll('.age').forEach(b => b.onclick = () => { S.age = b.dataset.age; save(); sfx.pick(); renderHome(); });
+  screenEl.querySelectorAll('.mode').forEach(b => b.onclick = () => { sfx.pick(); go(b.dataset.go); });
+  $('#revLink').onclick = e => { e.preventDefault(); go('review'); };
+}
+
+/* ============================== translation review (open with the link at the bottom of the home screen, or index.html?review) ============================== */
+const REVIEW_SAMPLES = {
+  fill: ['square'], built: ['square'], qName: ['square'], chal: ['square', 3], chalDone: ['square', 3],
+  status: [3, 12, 'square'], groups: [3, 2], starsTotal: [12, 90], sc: [4, 4], angSum: [4, 360], note: [4], level: [7], age: ['6–7']
+};
+function renderReview() {
+  crumb.textContent = 'EN ⇄ አማ';
+  const rows = Object.keys(L10N.en).map(k => {
+    const cell = lang => {
+      const v = L10N[lang][k];
+      if (typeof v !== 'function') return v;
+      try { return v(...(REVIEW_SAMPLES[k] || [3, 4])); } catch (e) { return '(sample)'; }
+    };
+    return `<tr><td class="k">${k}</td><td>${cell('en')}</td><td lang="am">${cell('am')}</td></tr>`;
+  }).join('');
+  screenEl.innerHTML = `<div class="info">Translation check: ${Object.keys(L10N.en).length} texts. Numbers and shape names in examples are samples.</div>
+    <table class="rev"><thead><tr><th>Key</th><th>English</th><th>አማርኛ</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* ============================== levels ============================== */
+const starsOf = (age, l) => ((S.stars[age] || {})[l]) || 0;
+function renderLevels() {
+  const A = AGES[S.age];
+  crumb.textContent = `${A.emoji} ${t('age.' + S.age)} · ${t('mPuz')}`;
+  const total = Array.from({ length: LEVELS }, (_, i) => starsOf(S.age, i + 1)).reduce((a, b) => a + b, 0);
+  let nextUnlocked = 1; while (nextUnlocked <= LEVELS && starsOf(S.age, nextUnlocked) > 0) nextUnlocked++;
+  screenEl.innerHTML = `
+    <div class="info">${t('levelsInfo')}
+      ${!A.rotate ? t('howDrag') : !A.flip ? t('howTurn') : t('howFlip')}
+      <br>${t('starsTotal', total, LEVELS * 3)}</div>
+    <div class="lvls">${Array.from({ length: LEVELS }, (_, i) => {
+      const l = i + 1, s = starsOf(S.age, l), locked = l > nextUnlocked;
+      return `<button class="lvl ${s ? 'done' : l === nextUnlocked ? 'next' : ''}" data-l="${l}" ${locked ? 'disabled' : ''}>${locked ? '🔒' : l}<small>${locked ? '' : stars(s)}</small></button>`;
+    }).join('')}</div>`;
+  screenEl.querySelectorAll('.lvl').forEach(b => b.onclick = () => { sfx.pick(); go('puzzle', +b.dataset.l); });
+}
+
+/* ============================== board engine (puzzle + builder) ============================== */
+let G = null, D = null;
+const pieceById = id => G.pieces.find(p => p.id === id);
+
+function occupied(excl) {
+  const m = new Set();
+  for (const q of G.pieces) if (q !== excl && q.gx != null) for (const c of q.cells) m.add((q.gx + c[0]) + ',' + (q.gy + c[1]));
+  return m;
+}
+function canPlace(p, cells, gx, gy) {
+  const occ = occupied(p);
+  return cells.every(c => { const k = (gx + c[0]) + ',' + (gy + c[1]); return G.region.has(k) && !occ.has(k); });
+}
+function pos(p) {
+  const L = G.layout;
+  if (p.gx != null) return [L.bx + p.gx * L.cell, L.by + p.gy * L.cell];
+  const [w, h] = dims(p.cells);
+  return [p.sx - w * L.cell / 2, p.sy - h * L.cell / 2];
+}
+function setPos(p, anim) {
+  const [x, y] = pos(p);
+  p.g.style.transition = anim ? 'transform .2s ease' : 'none';
+  p.g.style.transform = `translate(${x}px,${y}px)`;
+}
+function drawPiece(p) {
+  const s = G.layout.cell, g = p.g;
+  while (g.firstChild) g.removeChild(g.firstChild);
+  const body = el('g', { class: 'body' }, g), set = new Set(p.cells.map(K));
+  for (const [x, y] of p.cells) {
+    el('rect', { x: x * s, y: y * s, width: s + .5, height: s + .5, fill: p.color }, body);
+    el('rect', { x: x * s + 3, y: y * s + 3, width: s - 6, height: s - 6, rx: 3, fill: 'none', stroke: 'rgba(255,255,255,.45)', 'stroke-width': 2 }, body);
+  }
+  let d = '';
+  for (const [x, y] of p.cells) {
+    const X = x * s, Y = y * s;
+    if (!set.has(K([x, y - 1]))) d += `M${X} ${Y}h${s}`;
+    if (!set.has(K([x, y + 1]))) d += `M${X} ${Y + s}h${s}`;
+    if (!set.has(K([x - 1, y]))) d += `M${X} ${Y}v${s}`;
+    if (!set.has(K([x + 1, y]))) d += `M${X + s} ${Y}v${s}`;
+  }
+  el('path', { d, stroke: '#2b2d42', 'stroke-width': 3, 'stroke-linecap': 'round', fill: 'none' }, body);
+  for (const [x, y] of p.cells) {
+    el('circle', { cx: x * s + s / 2, cy: y * s + s / 2, r: s * .2, fill: 'rgba(255,255,255,.35)', stroke: 'rgba(0,0,0,.25)', 'stroke-width': 1.5 }, body);
+  }
+  g.classList.toggle('sel', G.sel === p.id);
+}
+
+function trayLayout(cell, sw, pad) {
+  const gap = Math.round(cell * .45), slots = [];
+  let x = pad, y = 0, rowH = 0;
+  for (const p of G.pieces) {
+    const sz = p.dim * cell;
+    if (x + sz > sw - pad && x > pad) { x = pad; y += rowH + gap; rowH = 0; }
+    slots.push({ cx: x + sz / 2, cy: y + sz / 2 });
+    x += sz + gap; rowH = Math.max(rowH, sz);
+  }
+  return { slots, height: y + rowH };
+}
+
+function buildStage() {
+  const host = $('#stagewrap'); if (!host) return;
+  const keepOverlay = host.querySelector('.overlay');
+  host.innerHTML = '';
+  const W = G.W, H = G.H, avW = Math.min(innerWidth - 24, 980), avH = Math.max(400, innerHeight - 260);
+  let L;
+  if (G.mode === 'create') {
+    const pad = 8, cell = Math.max(20, Math.min(46, Math.floor((avW - 2 * pad - 6) / W)));
+    L = { cell, pad, sw: W * cell + 2 * pad, sh: H * cell + 2 * pad, bx: pad, by: pad, ty: 0 };
+  } else {
+    for (let cell = 56; cell >= 22; cell -= 2) {
+      const pad = Math.round(cell * .5);
+      if (W * cell + 2 * pad > avW && cell > 22) continue;
+      const sw = Math.max(W * cell + 2 * pad, Math.min(avW, 12 * cell)), gap = Math.round(cell * .6);
+      const tl = trayLayout(cell, sw, pad);
+      const sh = pad + H * cell + gap + tl.height + pad;
+      L = { cell, pad, sw, sh, bx: Math.round((sw - W * cell) / 2), by: pad, ty: pad + H * cell + gap, tl };
+      if (sh <= avH || cell === 22) break;
+    }
+  }
+  G.layout = L;
+  const svg = el('svg', { class: 'stage', viewBox: `0 0 ${L.sw} ${L.sh}`, width: L.sw, height: L.sh }, null);
+  host.appendChild(svg); G.svg = svg;
+  const s = L.cell;
+
+  // board
+  const board = el('g', {}, svg);
+  if (G.mode === 'create') {
+    el('rect', { x: L.bx, y: L.by, width: W * s, height: H * s, fill: '#fff' }, board);
+    for (let i = 0; i <= W; i++) el('line', { x1: L.bx + i * s, y1: L.by, x2: L.bx + i * s, y2: L.by + H * s, stroke: '#d9dfe9', 'stroke-width': 1 }, board);
+    for (let j = 0; j <= H; j++) el('line', { x1: L.bx, y1: L.by + j * s, x2: L.bx + W * s, y2: L.by + j * s, stroke: '#d9dfe9', 'stroke-width': 1 }, board);
+  } else {
+    let d = '';
+    for (const c of G.cells) {
+      const X = L.bx + c[0] * s, Y = L.by + c[1] * s;
+      el('rect', { x: X, y: Y, width: s, height: s, fill: '#dfe5ee', stroke: '#c5cddb', 'stroke-width': 1.5, 'stroke-dasharray': '4 4' }, board);
+      if (!G.region.has(K([c[0], c[1] - 1]))) d += `M${X} ${Y}h${s}`;
+      if (!G.region.has(K([c[0], c[1] + 1]))) d += `M${X} ${Y + s}h${s}`;
+      if (!G.region.has(K([c[0] - 1, c[1]]))) d += `M${X} ${Y}v${s}`;
+      if (!G.region.has(K([c[0] + 1, c[1]]))) d += `M${X + s} ${Y}v${s}`;
+    }
+    el('path', { d, stroke: '#2b2d42', 'stroke-width': 3.5, 'stroke-linecap': 'round', fill: 'none' }, board);
+    el('rect', { x: 6, y: L.ty - Math.round(s * .35), width: L.sw - 12, height: L.tl.height + Math.round(s * .35) + L.pad / 2, rx: 16, fill: 'rgba(43,45,66,.06)' }, svg);
+    G.pieces.forEach((p, i) => { p.sx = L.tl.slots[i].cx; p.sy = L.ty + L.tl.slots[i].cy; });
+  }
+  G.ghost = el('g', { 'pointer-events': 'none' }, svg);
+  for (const p of G.pieces) {
+    p.g = el('g', { class: 'piece', 'data-id': p.id }, svg);
+    drawPiece(p); setPos(p, false);
+  }
+  svg.addEventListener('pointerdown', onDown);
+  svg.addEventListener('pointermove', onMove);
+  svg.addEventListener('pointerup', onUp);
+  svg.addEventListener('pointercancel', onUp);
+  if (keepOverlay) host.appendChild(keepOverlay);
+}
+
+function svgPt(e) {
+  const r = G.svg.getBoundingClientRect(), L = G.layout;
+  return [(e.clientX - r.left) * L.sw / r.width, (e.clientY - r.top) * L.sh / r.height];
+}
+function onDown(e) {
+  if (G.won) return;
+  const t = e.target.closest('.piece'); if (!t) return;
+  e.preventDefault();
+  const p = pieceById(+t.dataset.id), [x, y] = svgPt(e), [px, py] = pos(p);
+  G.svg.setPointerCapture(e.pointerId);
+  D = { p, ox: x - px, oy: y - py, x0: x, y0: y, moved: false };
+  G.svg.appendChild(p.g);
+}
+function onMove(e) {
+  if (!D) return;
+  const [x, y] = svgPt(e), p = D.p, L = G.layout;
+  if (!D.moved && Math.hypot(x - D.x0, y - D.y0) > 5) { D.moved = true; p.g.style.transition = 'none'; select(p.id); sfx.pick(); }
+  if (!D.moved) return;
+  const px = x - D.ox, py = y - D.oy;
+  p.g.style.transform = `translate(${px}px,${py}px)`;
+  const gx = Math.round((px - L.bx) / L.cell), gy = Math.round((py - L.by) / L.cell);
+  while (G.ghost.firstChild) G.ghost.removeChild(G.ghost.firstChild);
+  if (AGES[S.age].ghost && canPlace(p, p.cells, gx, gy))
+    for (const c of p.cells) el('rect', { x: L.bx + (gx + c[0]) * L.cell + 2, y: L.by + (gy + c[1]) * L.cell + 2, width: L.cell - 4, height: L.cell - 4, rx: 5, fill: 'none', stroke: '#2f9e44', 'stroke-width': 3, 'stroke-dasharray': '6 4' }, G.ghost);
+}
+function onUp(e) {
+  if (!D) return;
+  const d = D; D = null;
+  while (G.ghost.firstChild) G.ghost.removeChild(G.ghost.firstChild);
+  const p = d.p, L = G.layout;
+  if (!d.moved) { tap(p); return; }
+  const [x, y] = svgPt(e), px = x - d.ox, py = y - d.oy;
+  const gx = Math.round((px - L.bx) / L.cell), gy = Math.round((py - L.by) / L.cell);
+  if (canPlace(p, p.cells, gx, gy)) { p.gx = gx; p.gy = gy; setPos(p, true); sfx.place(); afterChange(); return; }
+  if (G.mode === 'create') {
+    const outside = x < L.bx || y < L.by || x > L.bx + G.W * L.cell || y > L.by + G.H * L.cell;
+    if (outside) { removePiece(p); sfx.pick(); afterChange(); return; }
+    setPos(p, true); sfx.bad(); return;
+  }
+  p.gx = null; setPos(p, true); sfx.bad(); afterChange();
+}
+function select(id) {
+  G.sel = id;
+  G.pieces.forEach(q => q.g && q.g.classList.toggle('sel', q.id === id));
+}
+function removePiece(p) {
+  p.g.remove(); G.pieces.splice(G.pieces.indexOf(p), 1);
+  if (G.sel === p.id) G.sel = null;
+}
+function tap(p) {
+  select(p.id);
+  if (G.mode === 'puzzle' && p.gx != null) { p.gx = null; setPos(p, true); sfx.pick(); afterChange(); return; }
+  const A = AGES[S.age];
+  if (G.mode === 'create' || A.rotate) transform(p, 'rot'); else sfx.pick();
+}
+function transform(p, kind) {
+  if (!p) return toast(t('tapFirst'));
+  const A = AGES[S.age];
+  if (G.mode === 'puzzle' && ((kind === 'rot' && !A.rotate) || (kind === 'flip' && !A.flip))) return;
+  const next = kind === 'rot' ? rot(p.cells) : flp(p.cells);
+  if (p.gx != null) {
+    if (G.mode === 'puzzle') { p.gx = null; }
+    else if (!canPlace(p, next, p.gx, p.gy)) {
+      let ok = false;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1]])
+        if (canPlace(p, next, p.gx + dx, p.gy + dy)) { p.gx += dx; p.gy += dy; ok = true; break; }
+      if (!ok) { sfx.bad(); p.g.classList.add('shake'); setTimeout(() => p.g.classList.remove('shake'), 300); return; }
+    }
+  }
+  p.cells = next; drawPiece(p); setPos(p, true); sfx.pick(); afterChange();
+}
+const selPiece = () => G && G.pieces.find(p => p.id === G.sel);
+
+window.addEventListener('keydown', e => {
+  if (!G) return;
+  const p = selPiece();
+  if (e.key === 'r' || e.key === 'R') transform(p, 'rot');
+  else if (e.key === 'f' || e.key === 'F') transform(p, 'flip');
+  else if ((e.key === 'Delete' || e.key === 'Backspace') && G.mode === 'create' && p) { removePiece(p); afterChange(); }
+  else if ((e.key === 'h' || e.key === 'H') && G.mode === 'puzzle') hint();
+});
+let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (G && G.svg && !D) buildStage(); }, 150); });
+
+function afterChange() { G.mode === 'puzzle' ? updatePuzzle() : updateCreate(); }
+
+/* ============================== puzzle screen ============================== */
+function renderPuzzle(l) {
+  const A = AGES[S.age], lv = makeLevel(S.age, l);
+  const region = new Set(lv.region.map(K)), [W, H] = dims(lv.region);
+  G = { mode: 'puzzle', level: l, name: lv.name, cells: lv.region, region, W, H, pieces: lv.pieces, hints: 0, sel: null, won: false };
+  crumb.textContent = `${A.emoji} ${t('level', l)}`;
+  const how = !A.rotate ? t('howDrag') : !A.flip ? t('howTurn') : t('howFlip');
+  const extra = (S.age === 'mid' || S.age === 'senior') ? ' ' + t('area', lv.region.length) : '';
+  screenEl.innerHTML = `
+    <div class="gamebar">
+      <div class="goal">${t('fill', tn(lv.name))}<small>${t('useAll', lv.pieces.length)} ${how}${extra}</small></div>
+      <div class="tools">
+        ${A.rotate ? `<button class="btn small" id="bRot">${t('turn')}</button>` : ''}
+        ${A.flip ? `<button class="btn small" id="bFlip">${t('flip')}</button>` : ''}
+        <button class="btn small yellow" id="bHint">${t('hint')}</button>
+        <button class="btn small" id="bRestart">${t('restart')}</button>
+      </div>
+    </div>
+    <div class="stagewrap" id="stagewrap"></div>
+    <div class="progress"><i id="bar"></i></div>`;
+  if ($('#bRot')) $('#bRot').onclick = () => transform(selPiece(), 'rot');
+  if ($('#bFlip')) $('#bFlip').onclick = () => transform(selPiece(), 'flip');
+  $('#bHint').onclick = hint;
+  $('#bRestart').onclick = () => go('puzzle', l);
+  buildStage(); updatePuzzle();
+}
+function updatePuzzle() {
+  const placed = G.pieces.filter(p => p.gx != null).reduce((n, p) => n + p.cells.length, 0);
+  $('#bar').style.width = (100 * placed / G.cells.length) + '%';
+  if (placed === G.cells.length) winPuzzle();
+}
+function hint() {
+  if (G.won) return;
+  const ok = p => p.gx === p.sol.gx && p.gy === p.sol.gy && same(p.cells, p.sol.cells);
+  const p = G.pieces.find(q => q.gx == null) || G.pieces.find(q => !ok(q));
+  if (!p) return;
+  const need = new Set(p.sol.cells.map(c => (p.sol.gx + c[0]) + ',' + (p.sol.gy + c[1])));
+  for (const q of G.pieces) if (q !== p && q.gx != null && q.cells.some(c => need.has((q.gx + c[0]) + ',' + (q.gy + c[1])))) { q.gx = null; setPos(q, true); }
+  p.cells = p.sol.cells; p.gx = p.sol.gx; p.gy = p.sol.gy; drawPiece(p); G.svg.appendChild(p.g); setPos(p, true);
+  G.hints++; sfx.ok(); updatePuzzle();
+}
+function winPuzzle() {
+  if (G.won) return;
+  G.won = true;
+  const st = Math.max(1, 3 - G.hints), A = S.age;
+  S.stars[A] = S.stars[A] || {};
+  S.stars[A][G.level] = Math.max(S.stars[A][G.level] || 0, st); save();
+  sfx.win(); confetti();
+  const fact = t('f.' + G.name) || t('f.mystery');
+  const ov = document.createElement('div'); ov.className = 'overlay';
+  ov.innerHTML = `<div class="card"><div class="stars">${stars(st)}</div><h2>${t('built', tn(G.name))}</h2><p>${fact}</p>
+    <div class="row">${G.level < LEVELS ? `<button class="btn green" id="oNext">${t('next')}</button>` : ''}
+    <button class="btn" id="oAgain">${t('again')}</button><button class="btn" id="oLvls">${t('levels')}</button></div></div>`;
+  $('#stagewrap').appendChild(ov);
+  const l = G.level;
+  if ($('#oNext')) $('#oNext').onclick = () => go('puzzle', l + 1);
+  $('#oAgain').onclick = () => go('puzzle', l);
+  $('#oLvls').onclick = () => go('levels');
+}
+
+/* ============================== builder ============================== */
+const PALETTE = [
+  ['Block', [[0, 0]]], ['Domino', [[0, 0], [1, 0]]], ['Bar 3', [[0, 0], [1, 0], [2, 0]]], ['Corner', [[0, 0], [0, 1], [1, 1]]],
+  ['Square', [[0, 0], [1, 0], [0, 1], [1, 1]]], ['Bar 4', [[0, 0], [1, 0], [2, 0], [3, 0]]], ['L', [[0, 0], [0, 1], [0, 2], [1, 2]]],
+  ['T', [[0, 0], [1, 0], [2, 0], [1, 1]]], ['S', [[1, 0], [2, 0], [0, 1], [1, 1]]], ['Plus', plusCells(3)],
+  ['Rect', rectCells(3, 2)], ['Big L', lCells(3, 3)], ['Bar 5', [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]]
+];
+function paletteFor(age) { return PALETTE.slice(0, AGES[age].palette); }
+
+function miniSvg(cells, color) {
+  const s = 14, [w, h] = dims(cells);
+  return `<svg width="${w * s + 4}" height="${h * s + 4}" viewBox="-2 -2 ${w * s + 4} ${h * s + 4}">${cells.map(c =>
+    `<rect x="${c[0] * s}" y="${c[1] * s}" width="${s}" height="${s}" rx="3" fill="${color}" stroke="#2b2d42" stroke-width="2"/>`).join('')}</svg>`;
+}
+
+function newChallenge() {
+  const A = AGES[S.age], solved = S.solved[S.age] || 0, rng = mulberry(strHash(S.age) + solved * 313 + 17);
+  const names = { tiny: ['square', 'rectangle'], young: ['square', 'rectangle', 'L-shape'], mid: ['square', 'rectangle', 'L-shape', 'T-shape', 'plus'], senior: ['square', 'rectangle', 'L-shape', 'T-shape', 'plus'] }[S.age];
+  const name = pick(names, rng), cmax = Math.min(24, 5 + Math.floor(solved * 1.5));
+  let cs;
+  if (name === 'square') cs = randInt(2, Math.max(2, Math.min(5, Math.floor(Math.sqrt(cmax)))), rng) ** 2;
+  else if (name === 'rectangle') { let w = randInt(2, 6, rng), h = randInt(2, 6, rng); if (w === h) w++; cs = w * h; while (cs > cmax && w > 2) { w--; if (w === h) w--; if (w < 2) { w = 2; h = 3; } cs = w * h; } }
+  else if (name === 'L-shape') cs = randInt(2, 6, rng) + randInt(2, 6, rng) - 1;
+  else if (name === 'T-shape') cs = pick([3, 5, 7], rng) + randInt(2, 5, rng) - 1;
+  else cs = pick([5, 9], rng);
+  if (name !== 'square' && name !== 'rectangle') cs = Math.min(cs, Math.max(5, cmax));
+  const lo = Math.ceil(cs / 2), n = Math.max(1, Math.round(cs - (cs - lo) * Math.min(1, solved / 10) * rng()));
+  return { name, n: Math.min(n, A.maxP + 4), cells: cs };
+}
+
+function renderCreate() {
+  const A = AGES[S.age];
+  G = { mode: 'create', W: A.board[0], H: A.board[1], pieces: [], sel: null, nextId: 0, won: false, chal: null };
+  G.region = new Set(rectCells(G.W, G.H).map(K));
+  crumb.textContent = `${A.emoji} ${t('mBuild')}`;
+  screenEl.innerHTML = `
+    <div class="chal" id="chal"></div>
+    <div class="palette">${paletteFor(S.age).map(([n, cs], i) => `<button class="pal" data-i="${i}">${miniSvg(cs, COLORS[i % 12])}</button>`).join('')}</div>
+    <div class="gamebar"><div class="tools">
+      <button class="btn small" id="bRot">${t('turn')}</button><button class="btn small" id="bFlip">${t('flip')}</button>
+      <button class="btn small" id="bDel">${t('remove')}</button><button class="btn small" id="bClear">${t('clear')}</button>
+    </div></div>
+    <div class="stagewrap" id="stagewrap"></div>
+    <div class="status" id="status"></div>`;
+  screenEl.querySelectorAll('.pal').forEach(b => b.onclick = () => spawn(+b.dataset.i));
+  $('#bRot').onclick = () => transform(selPiece(), 'rot');
+  $('#bFlip').onclick = () => transform(selPiece(), 'flip');
+  $('#bDel').onclick = () => { const p = selPiece(); if (!p) return toast(t('tapFirst')); removePiece(p); afterChange(); };
+  $('#bClear').onclick = () => { [...G.pieces].forEach(removePiece); afterChange(); };
+  G.chal = newChallenge();
+  buildStage(); updateCreate();
+}
+function spawn(i) {
+  const [, cells] = paletteFor(S.age)[i], base = norm(cells), cx = G.W / 2, cy = G.H / 2;
+  const spots = [];
+  for (let y = 0; y < G.H; y++) for (let x = 0; x < G.W; x++) spots.push([x, y]);
+  spots.sort((a, b) => Math.hypot(a[0] - cx, a[1] - cy) - Math.hypot(b[0] - cx, b[1] - cy));
+  const p = { id: G.nextId++, color: COLORS[i % 12], cells: base, base, dim: Math.max(...dims(base)), gx: null, gy: null };
+  const spot = spots.find(([x, y]) => canPlace(p, base, x, y));
+  if (!spot) return toast(t('boardFull'));
+  p.gx = spot[0]; p.gy = spot[1];
+  G.pieces.push(p);
+  p.g = el('g', { class: 'piece', 'data-id': p.id }, G.svg);
+  drawPiece(p); setPos(p, false); select(p.id); sfx.place(); updateCreate();
+}
+function components() {
+  const cells = new Map();
+  G.pieces.forEach(p => p.cells.forEach(c => cells.set((p.gx + c[0]) + ',' + (p.gy + c[1]), [p.gx + c[0], p.gy + c[1]])));
+  const seen = new Set(), comps = [];
+  for (const [k, c] of cells) {
+    if (seen.has(k)) continue;
+    const comp = [], q = [c]; seen.add(k);
+    while (q.length) {
+      const [x, y] = q.pop(); comp.push([x, y]);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const t = [x + dx, y + dy], tk = K(t); if (cells.has(tk) && !seen.has(tk)) { seen.add(tk); q.push(t); } }
+    }
+    comps.push(comp);
+  }
+  return comps;
+}
+function updateCreate() {
+  const comps = components(), n = G.pieces.length, total = comps.reduce((a, c) => a + c.length, 0);
+  let txt;
+  if (!n) txt = t('buildStart');
+  else if (comps.length === 1) { const nm = nameOf(comps[0]); txt = t('status', n, total, nm ? tn(nm) : null); }
+  else txt = t('groups', n, comps.length);
+  $('#status').innerHTML = txt;
+  const c = G.chal, name = comps.length === 1 ? nameOf(comps[0]) : null;
+  const done = c && name === c.name && n === c.n;
+  const box = $('#chal');
+  box.className = 'chal' + (done ? ' ok' : '');
+  box.innerHTML = done
+    ? `<span>${t('chalDone', tn(c.name), c.n)}</span><button class="btn small green" id="cNext">${t('nextChal')}</button>`
+    : `<span>${t('chal', tn(c.name), c.n)}</span><button class="btn small" id="cSkip">${t('skip')}</button>`;
+  if (done) {
+    if (!G.chalWon) { G.chalWon = true; S.solved[S.age] = (S.solved[S.age] || 0) + 1; save(); sfx.win(); confetti(); }
+    $('#cNext').onclick = nextChal;
+  } else { G.chalWon = false; $('#cSkip').onclick = () => { G.chal = reroll(mulberry(Date.now())); updateCreate(); }; }
+}
+function reroll(r) {
+  const saved = S.solved[S.age] || 0;
+  S.solved[S.age] = saved + Math.floor(r() * 5) + 1;
+  const c = newChallenge(); S.solved[S.age] = saved; return c;
+}
+function nextChal() { G.chal = newChallenge(); G.chalWon = false; [...G.pieces].forEach(removePiece); updateCreate(); }
+
+/* ============================== shape lab ============================== */
+function poly(n, r, start) { return Array.from({ length: n }, (_, i) => { const a = start + i * 2 * Math.PI / n; return [50 + r * Math.cos(a), 50 + r * Math.sin(a)]; }); }
+const star = (() => { const o = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 19 : 45; o.push([50 + r * Math.cos(a), 50 + r * Math.sin(a)]); } return o; })();
+const SHAPES = [
+  { id: 'circle', name: 'Circle', sides: 0, corners: 0, color: '#ff6b6b', fact: 'A circle is perfectly round. It has no corners and no straight sides. Wheels are circles!' },
+  { id: 'triangle', name: 'Triangle', sides: 3, corners: 3, color: '#ffa94d', pts: [[50, 10], [92, 86], [8, 86]], fact: 'A triangle has 3 sides and 3 corners. It is the strongest shape for building!' },
+  { id: 'square', name: 'Square', sides: 4, corners: 4, color: '#69db7c', pts: [[16, 16], [84, 16], [84, 84], [16, 84]], fact: 'A square has 4 equal sides and 4 square corners.' },
+  { id: 'rectangle', name: 'Rectangle', sides: 4, corners: 4, color: '#4dabf7', pts: [[6, 28], [94, 28], [94, 72], [6, 72]], fact: 'A rectangle has 4 sides and 4 square corners. Doors and books are rectangles.' },
+  { id: 'oval', name: 'Oval', sides: 0, corners: 0, color: '#da77f2', fact: 'An oval looks like a squashed circle. An egg is an oval!' },
+  { id: 'diamond', name: 'Diamond', sides: 4, corners: 4, color: '#ffd43b', pts: [[50, 6], [92, 50], [50, 94], [8, 50]], fact: 'A diamond has 4 equal sides, but it stands on a corner. It is also called a rhombus.' },
+  { id: 'pentagon', name: 'Pentagon', sides: 5, corners: 5, color: '#38d9a9', pts: poly(5, 44, -Math.PI / 2), fact: 'A pentagon has 5 sides and 5 corners. "Penta" means five!' },
+  { id: 'hexagon', name: 'Hexagon', sides: 6, corners: 6, color: '#f783ac', pts: poly(6, 44, 0), fact: 'A hexagon has 6 sides and 6 corners. Bees build their honeycomb from hexagons!' },
+  { id: 'octagon', name: 'Octagon', sides: 8, corners: 8, color: '#748ffc', pts: poly(8, 45, Math.PI / 8), fact: 'An octagon has 8 sides and 8 corners. A stop sign is an octagon!' },
+  { id: 'star', name: 'Star', sides: 10, corners: 10, color: '#a9e34b', pts: star, noAngle: true, fact: 'This star has 5 points. Counting the dents too, it has 10 corners!' },
+  { id: 'trapezoid', name: 'Trapezoid', sides: 4, corners: 4, color: '#ff8787', pts: [[28, 22], [72, 22], [94, 78], [6, 78]], fact: 'A trapezoid has 4 sides, and one pair of them is parallel (they never meet).' },
+  { id: 'parallelogram', name: 'Parallelogram', sides: 4, corners: 4, color: '#3bc9db', pts: [[26, 24], [94, 24], [74, 76], [6, 76]], fact: 'A parallelogram has 2 pairs of parallel sides. It looks like a leaning rectangle.' },
+  { id: 'heptagon', name: 'Heptagon', sides: 7, corners: 7, color: '#9775fa', pts: poly(7, 44, -Math.PI / 2), fact: 'A heptagon has 7 sides. "Hepta" means seven!' }
+];
+const shapesFor = age => SHAPES.slice(0, AGES[age].shapes);
+const shortFact = f => { const m = f.match(/^.*?[.።!](?=\s|$)/); return m ? m[0] : f; };
+function shapeSvg(sh, dots) {
+  const common = `fill="${sh.color}" stroke="#2b2d42" stroke-width="3.5" stroke-linejoin="round"`;
+  let body = sh.id === 'circle' ? `<circle cx="50" cy="50" r="42" ${common}/>`
+    : sh.id === 'oval' ? `<ellipse cx="50" cy="50" rx="44" ry="30" ${common}/>`
+    : `<polygon points="${sh.pts.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}" ${common}/>`;
+  if (dots && sh.pts) body += sh.pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="4.5" fill="#fff" stroke="#e03131" stroke-width="3"/>`).join('');
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">${body}</svg>`;
+}
+
+function renderLearn(tab = 'explore', sel = null) {
+  const A = AGES[S.age], list = shapesFor(S.age);
+  crumb.textContent = `${A.emoji} ${t('mLab')}`;
+  G = null;
+  screenEl.innerHTML = `<div class="tabs"><button class="tab ${tab === 'explore' ? 'on' : ''}" data-t="explore">${t('explore')}</button><button class="tab ${tab === 'quiz' ? 'on' : ''}" data-t="quiz">${t('quiz')}</button></div><div id="pane"></div>`;
+  screenEl.querySelectorAll('.tab').forEach(b => b.onclick = () => { sfx.pick(); renderLearn(b.dataset.t); });
+  if (tab === 'explore') exploreShapes(list, sel); else quiz(list);
+}
+function exploreShapes(list, selId) {
+  const sh = list.find(s => s.id === selId) || list[0], pane = $('#pane');
+  let facts;
+  if (S.age === 'tiny') facts = `<p>${sh.corners ? t('countCorners', sh.corners) : t('noCorners')}</p>`;
+  else if (S.age === 'young') facts = `<p>${t('sc', sh.sides, sh.corners)}</p>`;
+  else {
+    const poly = sh.sides >= 3 && !sh.noAngle;
+    facts = `<p>${t('sc', sh.sides, sh.corners)}</p>` +
+      (S.age === 'senior' && poly ? `<p>${t('angSum', sh.sides, (sh.sides - 2) * 180)}</p>` : '') +
+      (S.age === 'mid' && poly ? `<p>${t('note', sh.sides)}</p>` : '');
+  }
+  const fact = S.age === 'tiny' ? shortFact(t('sf.' + sh.id)) : t('sf.' + sh.id), nm = t('sh.' + sh.id);
+  pane.innerHTML = `<div class="detail">${shapeSvg(sh, true)}<div class="txt"><h2>${nm}</h2>${facts}<p>${fact}</p>${canSpeak() ? `<button class="btn small" id="say">${t('say')}</button>` : ''}</div></div>
+    <div class="shapes">${list.map(s => `<button class="shape ${s.id === sh.id ? 'on' : ''}" data-id="${s.id}">${shapeSvg(s)}${t('sh.' + s.id)}</button>`).join('')}</div>`;
+  if ($('#say')) $('#say').onclick = () => speak(nm + '. ' + fact, true);
+  pane.querySelectorAll('.shape').forEach(b => b.onclick = () => { sfx.pick(); exploreShapes(list, b.dataset.id); speak(t('sh.' + b.dataset.id)); });
+}
+let qState = { streak: 0 };
+function quiz(list) {
+  const pane = $('#pane'), rng = Math.random;
+  const nOpts = Math.min(list.length, (S.age === 'tiny' ? 3 : 3) + Math.floor(qState.streak / (S.age === 'tiny' ? 5 : 3)), S.age === 'tiny' ? 4 : 6);
+  // question types grow with age: name → sides → corners / "more sides" → "quadrilateral" and angle sums
+  const types = { tiny: ['name'], young: ['name', 'sides'], mid: ['name', 'sides', 'more', 'corners'], senior: ['sides', 'more', 'quad', 'angles'] }[S.age];
+  const type = pick(types, rng);
+  const uniqBy = (key, n) => { const used = new Set(); return shuffle(list.slice(), rng).filter(s => s[key] > 0 && !used.has(s[key]) && used.add(s[key])).slice(0, n); };
+  let opts, ans, q;
+  if (type === 'sides' || type === 'corners') {
+    const key = type; opts = uniqBy(key, Math.max(3, nOpts)); ans = pick(opts, rng);
+    q = t(type === 'sides' ? 'qSides' : 'qCorners', ans[key]);
+  } else if (type === 'more') {
+    opts = uniqBy('sides', 2); ans = opts.reduce((a, b) => b.sides > a.sides ? b : a);
+    q = t('qMore');
+  } else if (type === 'quad') {
+    const quads = shuffle(list.filter(s => s.sides === 4), rng), others = shuffle(list.filter(s => s.sides !== 4), rng);
+    ans = quads[0]; opts = [ans, ...others.slice(0, Math.max(2, nOpts - 1))];
+    q = t('qQuad');
+  } else if (type === 'angles') {
+    const polys = list.filter(s => s.sides >= 3 && !s.noAngle); opts = uniqBy('sides', Math.max(3, nOpts)).filter(s => polys.includes(s));
+    if (opts.length < 3) opts = polys.slice(0, 3);
+    ans = pick(opts, rng); q = t('qAngles', (ans.sides - 2) * 180);
+  } else {
+    opts = shuffle(list.slice(), rng).slice(0, nOpts); ans = pick(opts, rng);
+    q = t('qName', t('sh.' + ans.id));
+  }
+  opts = shuffle(opts, rng);
+  pane.innerHTML = `<div class="quiz"><div class="q">${q} ${canSpeak() ? '<button class="btn small" id="say">🔊</button>' : ''}</div>
+    <div class="opts">${opts.map(s => `<button class="opt" data-id="${s.id}">${shapeSvg(s)}</button>`).join('')}</div>
+    <div class="streak">${t('streak', qState.streak, S.quizBest)}</div></div>`;
+  if ($('#say')) $('#say').onclick = () => speak(q.replace(/<[^>]+>/g, ''), true);
+  speak(q.replace(/<[^>]+>/g, ''));
+  pane.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    if (b.dataset.id === ans.id) {
+      b.classList.add('right'); sfx.ok(); qState.streak++;
+      if (qState.streak > S.quizBest) { S.quizBest = qState.streak; save(); }
+      if (qState.streak % 5 === 0) confetti();
+      setTimeout(() => S.screen === 'learn' && quiz(list), 900);
+    } else { b.classList.add('wrong'); sfx.bad(); qState.streak = 0; pane.querySelector('.streak').textContent = t('streakLost'); }
+  });
+}
+
+/* ============================== boot ============================== */
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => { });
+load();
+applyLang();
+$('#snd').textContent = S.sound ? '🔊' : '🔇';
+go(/review/.test(location.search + location.hash) ? 'review' : 'home');
+</script>
+</body>
+</html>
